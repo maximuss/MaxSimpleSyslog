@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27130.2020
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MaxSimpleSyslog", "MaxSimpleSyslog\MaxSimpleSyslog.csproj", "{8CFEE219-3824-4A65-8EEC-80795CAF2124}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTest", "UnitTest\UnitTest.csproj", "{52505DEA-E02E-496E-995F-B718DFE1ADE8}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8CFEE219-3824-4A65-8EEC-80795CAF2124}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8CFEE219-3824-4A65-8EEC-80795CAF2124}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8CFEE219-3824-4A65-8EEC-80795CAF2124}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8CFEE219-3824-4A65-8EEC-80795CAF2124}.Release|Any CPU.Build.0 = Release|Any CPU
+		{52505DEA-E02E-496E-995F-B718DFE1ADE8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{52505DEA-E02E-496E-995F-B718DFE1ADE8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{52505DEA-E02E-496E-995F-B718DFE1ADE8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{52505DEA-E02E-496E-995F-B718DFE1ADE8}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {54DE8816-B106-4C4A-9E01-600B2462C1D7}
+	EndGlobalSection
+EndGlobal

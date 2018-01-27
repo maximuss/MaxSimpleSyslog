@@ -3,3 +3,7 @@
 ################################################################################
 
 /.vs/MaxSimpleSyslog/v15
+/MaxSimpleSyslog/bin/Debug/netcoreapp2.0
+/MaxSimpleSyslog/obj
+/UnitTest/bin/Debug/netcoreapp2.0
+/UnitTest/obj
