@@ -29,7 +29,7 @@ Notice that if you dont supply it with a **tag** then is use the assembly, class
 ### Syslog server
 I have only tested the framework on Syslog Watcher from https://syslogwatcher.com/
 
-There should not be anything wrong with another Syslog server, but with this server i can guarantee the framework is working.
+The framework should be working with any Syslog server, but with Syslog Watcher i can guarantee the framework is working.
 
 
 
