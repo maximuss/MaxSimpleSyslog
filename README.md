@@ -21,9 +21,15 @@ The complete signature for initialize is:
  
 For logging you just use:
 
-	Logger.Emergency("With Tag");
+	Logger.Emergency("Message");
 	
 Notice that if you dont supply it with a **tag** then is use the assembly, class name and method in the **tag** section.
 	
+	
+### Syslog server
+I have only tested the framework on Syslog Watcher from https://syslogwatcher.com/
+
+There should not be anything wrong with another Syslog server, but with this server i can guarantee that the framework is working.
+
 
 
