@@ -17,7 +17,7 @@ The complete signature for initialize is:
 
 	public static void Initialize(string hostName, int port, string appName = "", Facility facility = Facility.User)
 	
-**Facility** is a static class with all the log level.
+**Facility** is a static class with all the provided options.
  
 For logging you just use:
 
