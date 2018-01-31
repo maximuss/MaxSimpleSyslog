@@ -1,60 +1,74 @@
+using System;
 using SimpleSyslog;
 
 namespace MaxSimpleSyslog
 {
     public class Logger
     {
-        readonly string _sender;
-
-        public Logger(string sender)
+    
+        public Logger()
         {
-            _sender = sender;
         }
 
-        internal void SendLog(Severity severity, string message, params object[] args)
+        internal static void SendLog(Severity severity, string message, Exception e = null)
         {
-            message = string.Format(message, args);
-            Syslog.Send(severity, _sender, message);
+            message = string.Format(message);
+            Syslog.Send(severity,message,e);
         }
 
-        public void Emergency(string message, params object[] args)
+        public static void Emergency(string message)
         {
-            SendLog(Severity.Emergency, message, args);
+            SendLog(Severity.Emergency, message);
         }
 
-        public void Alert(string message, params object[] args)
+        public static void Emergency(string message, Exception e)
         {
-            SendLog(Severity.Alert, message, args);
+            SendLog(Severity.Emergency, message,e);
         }
 
-        public void Critical(string message, params object[] args)
+        public static void Alert(string message)
         {
-            SendLog(Severity.Critical, message, args);
+            SendLog(Severity.Alert, message);
         }
 
-        public void Error(string message, params object[] args)
+        public static void Critical(string message)
         {
-            SendLog(Severity.Error, message, args);
+            SendLog(Severity.Critical, message);
         }
 
-        public void Warn(string message, params object[] args)
+        public static void Critical(string message, Exception e)
         {
-            SendLog(Severity.Warn, message, args);
+            SendLog(Severity.Critical, message,e);
         }
 
-        public void Notice(string message, params object[] args)
+        public static void Error(string message)
         {
-            SendLog(Severity.Notice, message, args);
+            SendLog(Severity.Error, message);
         }
 
-        public void Info(string message, params object[] args)
+        public static void Error(string message, Exception e)
         {
-            SendLog(Severity.Info, message, args);
+            SendLog(Severity.Error, message,e);
         }
 
-        public void Debug(string message, params object[] args)
+        public static void Warn(string message)
         {
-            SendLog(Severity.Debug, message, args);
+            SendLog(Severity.Warn, message);
+        }
+
+        public static void Notice(string message)
+        {
+            SendLog(Severity.Notice, message);
+        }
+
+        public static void Info(string message)
+        {
+            SendLog(Severity.Info, message);
+        }
+
+        public static void Debug(string message)
+        {
+            SendLog(Severity.Debug, message);
         }
     }
 }

@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.Net;
 using System.Net.Sockets;
+using System.Runtime.CompilerServices;
 using System.Text;
 using MaxSimpleSyslog;
 
@@ -8,127 +11,102 @@ namespace SimpleSyslog
 {
     public static class Syslog
     {
-        static bool _useLocalTime;
-        static readonly UdpClient UdpClient = new UdpClient();
-        static Facility _facility;
-        static string _fixedSender;
-        static string _hostName;
-        static int _port;
-        static string _messageFormat;
+        private static readonly UdpClient UdpClient = new UdpClient();
+        private static Facility _facility;
+        private static string _hostName;
+        private static int _port;
+        private static string _appName;
+        private static readonly int VERSION = 1;
 
-        public static void Initialize(string hostName, int port, Facility facility = Facility.User, string sender = null, bool useLocalTime = false, string messageFormat = null)
+        public static void Initialize(string hostName, int port, string appName = "", Facility facility = Facility.User)
         {
             _hostName = hostName;
             _port = port;
-            _fixedSender = sender;
             _facility = facility;
-            _useLocalTime = useLocalTime;
-            _messageFormat = messageFormat;
+            _facility = facility;
+            _appName = appName;
         }
 
-        public static Logger Logger(this object obj)
-        {
-            return new Logger(obj.GetType()
-                                 .Name);
-        }
-
-        static void SendLog(Severity severity, string sender, string message, params object[] args)
-        {
-            new Logger(sender).SendLog(severity, message, args);
-        }
-
-        public static void Emergency(string sender, object arg)
-        {
-            Emergency(sender, arg.ToString());
-        }
-
-        public static void Emergency(string sender, string message, params object[] args)
-        {
-            SendLog(Severity.Emergency, sender, message, args);
-        }
-
-        public static void Alert(string sender, object arg)
-        {
-            Alert(sender, arg.ToString());
-        }
-
-        public static void Alert(string sender, string message, params object[] args)
-        {
-            SendLog(Severity.Alert, sender, message, args);
-        }
-
-        public static void Critical(string sender, object arg)
-        {
-            Critical(sender, arg.ToString());
-        }
-
-        public static void Critical(string sender, string message, params object[] args)
-        {
-            SendLog(Severity.Critical, sender, message, args);
-        }
-
-        public static void Error(string sender, object arg)
-        {
-            Error(sender, arg.ToString());
-        }
-
-        public static void Error(string sender, string message, params object[] args)
-        {
-            SendLog(Severity.Error, sender, message, args);
-        }
-
-        public static void Warn(string sender, object arg)
-        {
-            Warn(sender, arg.ToString());
-        }
-
-        public static void Warn(string sender, string message, params object[] args)
-        {
-            SendLog(Severity.Warn, sender, message, args);
-        }
-
-        public static void Notice(string sender, object arg)
-        {
-            Notice(sender, arg.ToString());
-        }
-
-        public static void Notice(string sender, string message, params object[] args)
-        {
-            SendLog(Severity.Notice, sender, message, args);
-        }
-
-        public static void Info(string sender, object arg)
-        {
-            Info(sender, arg.ToString());
-        }
-
-        public static void Info(string sender, string message, params object[] args)
-        {
-            SendLog(Severity.Info, sender, message, args);
-        }
-
-        public static void Debug(string sender, object arg)
-        {
-            Debug(sender, arg.ToString());
-        }
-
-        public static void Debug(string sender, string message, params object[] args)
-        {
-            SendLog(Severity.Debug, sender, message, args);
-        }
-
-        internal static void Send(Severity severity, string sender, string message)
+        internal static void Send(Severity severity, string message, Exception e)
         {
             if (string.IsNullOrWhiteSpace(_hostName) || _port == 0)
                 return;
-            //sender = (_fixedSender ?? sender).Replace(' ', '_');
-            var messageFormat = _messageFormat ?? "{message}";
-            message = messageFormat.Replace("{message}", message);
-            var dateTime = _useLocalTime ? DateTime.Now.ToString("s") : DateTime.UtcNow.ToString("s");
-            var hostName = Dns.GetHostName();
-            message = $"<{(int)_facility*8 + (int) severity}>{dateTime} {hostName} {sender} {message}";
-            var bytes = Encoding.UTF8.GetBytes(message);
-            UdpClient.SendAsync(bytes, bytes.Length, _hostName, _port);
+            var constructMessage = ConstructMessage(severity, _facility, message, _appName,e);
+            UdpClient.SendAsync(constructMessage, constructMessage.Length, _hostName, _port);
         }
+
+        private static byte[] ConstructMessage(Severity level, Facility facility, string message, string tag, Exception e)
+        {
+            int prival = ((int)facility) * 8 + ((int)level);
+            string pri = string.Format("<{0}>", prival);
+            string timestamp =
+                new DateTimeOffset(DateTime.Now, TimeZoneInfo.Local.GetUtcOffset(DateTime.Now)).ToString("yyyy-MM-ddTHH:mm:ss");
+
+            string hostname = string.Empty;
+            //found that this code doesn't work on all machines; enclosed in a try block
+            try
+            {
+                hostname = Dns.GetHostEntry(Environment.UserDomainName).HostName;
+            }
+            catch
+            {
+                hostname = "unknown";
+            }
+
+            if (string.IsNullOrEmpty(tag))
+            {
+                tag = ClassNameAndMethod(true);
+            }
+            else
+            {
+                message = ClassNameAndMethod(false) + message;
+            }
+
+
+
+            string header = $"{pri}{VERSION} {timestamp} {hostname} {tag}";
+
+            List<byte> syslogMsg = new List<byte>();
+            syslogMsg.AddRange(System.Text.Encoding.ASCII.GetBytes(header));
+            if (message != "")
+            {
+                // Lampe: took out "BOM" prefix
+                //syslogMsg.AddRange(System.Text.Encoding.ASCII.GetBytes(" BOM"));
+                syslogMsg.AddRange(System.Text.Encoding.ASCII.GetBytes(" "));
+                syslogMsg.AddRange(System.Text.Encoding.UTF8.GetBytes(message));
+            }
+
+            var array = syslogMsg.ToArray();
+            return array;
+        }
+
+        private static string ClassNameAndMethod(bool isTag)
+        {
+            StackTrace st = new StackTrace();
+            for (int i = 0; i < st.FrameCount; i++)
+            {
+                // Note that high up the call stack, there is only
+                // one stack frame.
+                StackFrame sf = st.GetFrame(i);
+                var module = sf.GetMethod().Module.Name;
+                if(module == null)
+                    continue;
+
+                if (module.Contains("MaxSimpleSyslog"))
+                    continue;
+
+                var className = sf.GetMethod().DeclaringType.FullName;
+                var methodName = sf.GetMethod().Name;
+                if (!isTag)
+                {
+                    return $"[{className}.{methodName}] - ";
+                }
+
+                return $"{className}.{methodName} ";
+            }
+
+            return String.Empty;
+        }
+
     }
 }
