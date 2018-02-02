@@ -62,7 +62,10 @@ namespace SimpleSyslog
                 message = ClassNameAndMethod(false) + message;
             }
 
-
+            if (e != null)
+            {
+                message += e.ToString();
+            }
 
             string header = $"{pri}{VERSION} {timestamp} {hostname} {tag}";
 
@@ -70,8 +73,6 @@ namespace SimpleSyslog
             syslogMsg.AddRange(System.Text.Encoding.ASCII.GetBytes(header));
             if (message != "")
             {
-                // Lampe: took out "BOM" prefix
-                //syslogMsg.AddRange(System.Text.Encoding.ASCII.GetBytes(" BOM"));
                 syslogMsg.AddRange(System.Text.Encoding.ASCII.GetBytes(" "));
                 syslogMsg.AddRange(System.Text.Encoding.UTF8.GetBytes(message));
             }
