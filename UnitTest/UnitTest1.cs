@@ -15,15 +15,25 @@ namespace UnitTest
         public void WithTagTest()
         {
             Syslog.Initialize("192.168.0.2", 514,"tag");
-            Logger.Emergency("With Tag");
+            Logger.Info("With Tag");
             
+        }
+
+        [Fact]
+        public void MultipleTest()
+        {
+            for (int i = 0; i < 20; i++)
+            {
+                Syslog.Initialize("192.168.0.2", 514, "tag");
+                Logger.Info("With Tag");
+            }
         }
 
         [Fact]
         public void WithoutTagTest()
         {
             Syslog.Initialize("192.168.0.2", 514);
-            Logger.Emergency("Without Tag");
+            Logger.Warn("Without Tag");
         }
 
         [Fact]
@@ -32,7 +42,7 @@ namespace UnitTest
             Syslog.Initialize("192.168.0.2", 514);
             try
             {
-                throw new TestClassException("My total wrong exception");
+                throw new Exception("My total wrong exception");
             }
             catch (Exception e)
             {

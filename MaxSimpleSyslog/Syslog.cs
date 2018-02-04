@@ -9,7 +9,7 @@ using MaxSimpleSyslog;
 
 namespace SimpleSyslog
 {
-    public static class Syslog
+    public class Syslog
     {
         private static readonly UdpClient UdpClient = new UdpClient();
         private static Facility _facility;
@@ -27,7 +27,7 @@ namespace SimpleSyslog
             _appName = appName;
         }
 
-        internal static void Send(Severity severity, string message, Exception e)
+        internal void Send(Severity severity, string message, Exception e)
         {
             if (string.IsNullOrWhiteSpace(_hostName) || _port == 0)
                 return;
@@ -35,7 +35,7 @@ namespace SimpleSyslog
             UdpClient.SendAsync(constructMessage, constructMessage.Length, _hostName, _port);
         }
 
-        private static byte[] ConstructMessage(Severity level, Facility facility, string message, string tag, Exception e)
+        private byte[] ConstructMessage(Severity level, Facility facility, string message, string tag, Exception e)
         {
             int prival = ((int)facility) * 8 + ((int)level);
             string pri = string.Format("<{0}>", prival);
@@ -64,7 +64,7 @@ namespace SimpleSyslog
 
             if (e != null)
             {
-                message += e.ToString();
+                message = $"[{message}]{Environment.NewLine} {Environment.NewLine} {e}";
             }
 
             string header = $"{pri}{VERSION} {timestamp} {hostname} {tag}";
@@ -73,15 +73,16 @@ namespace SimpleSyslog
             syslogMsg.AddRange(System.Text.Encoding.ASCII.GetBytes(header));
             if (message != "")
             {
-                syslogMsg.AddRange(System.Text.Encoding.ASCII.GetBytes(" "));
-                syslogMsg.AddRange(System.Text.Encoding.UTF8.GetBytes(message));
+                message = message.Replace($"\r\n", Environment.NewLine);
+                syslogMsg.AddRange(Encoding.ASCII.GetBytes(" "));
+                syslogMsg.AddRange(Encoding.UTF8.GetBytes(message));
             }
 
             var array = syslogMsg.ToArray();
             return array;
         }
 
-        private static string ClassNameAndMethod(bool isTag)
+        private string ClassNameAndMethod(bool isTag)
         {
             StackTrace st = new StackTrace();
             for (int i = 0; i < st.FrameCount; i++)

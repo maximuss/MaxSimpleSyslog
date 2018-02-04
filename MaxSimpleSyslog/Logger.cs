@@ -13,7 +13,8 @@ namespace MaxSimpleSyslog
         internal static void SendLog(Severity severity, string message, Exception e = null)
         {
             message = string.Format(message);
-            Syslog.Send(severity,message,e);
+            Syslog syslog = new Syslog();
+            syslog.Send(severity,message,e);
         }
 
         public static void Emergency(string message)
