@@ -7,8 +7,7 @@ The project is build on .NET core v2
 I builded it with Raspberry PI 3 with Windows Iot installed. I needed a small lightweight framework that i could use for logging to a syslog server.
 
 ### Usage
-Downlod the zip file or clone the repository or get it from NuGet
-https://www.nuget.org/packages/MaxSimpleSyslogNetFramework/1.0.0
+Downlod the zip file or clone the repository
 
 Start with initialize the logging, it's a static class so only do it once.
  
