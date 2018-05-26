@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Reflection;
 using System.Text;
@@ -52,10 +53,14 @@ namespace MaxSimpleSysLogNetFramework
         /// </summary>
         public static void Initialize()
         {
-            var currentDirectory = Directory.GetCurrentDirectory();
+            var path = $"{Directory.GetCurrentDirectory()}//sysloginit.json";
+
+            var exists = File.Exists(path);
+            if(!exists)
+                return;
 
             // deserialize JSON directly from a file
-            using (StreamReader file = File.OpenText($"{currentDirectory}//sysloginit.json"))
+            using (StreamReader file = File.OpenText(path))
             {
                 JsonSerializer serializer = new JsonSerializer();
                 _syslogInits = (IList<SyslogInit>)serializer.Deserialize(file, typeof(List<SyslogInit>));
@@ -94,6 +99,22 @@ namespace MaxSimpleSysLogNetFramework
             
         }
 
+        public static void DeleteJsonInitFile()
+        {
+            var currentDirectory = Directory.GetCurrentDirectory();
+
+            try
+            {
+                File.Delete($"{currentDirectory}//sysloginit.json");
+
+            }
+            catch (Exception e)
+            {
+
+                throw e;
+            }
+
+        }
 
         internal void Send(Severity severity, string message, Exception e)
         {

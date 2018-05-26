@@ -1,4 +1,5 @@
 using System;
+using MaxSimpleSyslog;
 
 namespace MaxSimpleSysLogNetFramework
 {

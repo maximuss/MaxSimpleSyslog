@@ -19,8 +19,9 @@ namespace Test
             //test.TestNlogLevel();
             //test.TestSeveralServers();
             //test.TestWithNewInstans();
-            test.TestWriteSyslogInitFile();
-            test.TestInitializeEmptyInit();
+            //test.TestWriteSyslogInitFile();
+            //test.TestInitializeEmptyInit();
+            test.TestInfoWithoutJsonInitFile();
         }
     }
 }

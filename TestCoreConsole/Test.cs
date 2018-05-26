@@ -112,5 +112,14 @@ namespace Test
             Syslog.Initialize();
             Logger.Info("Initialize from a json file.");
         }
+
+        public void TestInfoWithoutJsonInitFile()
+        {
+            Syslog.DeleteJsonInitFile();
+            Ini();
+            Logger.Info("Logging test without the json file");
+        }
+
+
     }
 }
