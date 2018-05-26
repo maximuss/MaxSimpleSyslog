@@ -1,5 +1,5 @@
-# MaxSimpleSyslogNetFramework
-Basic the same as my MaxSimpleSyslog, but this one run on .NET Framework 4.xx 
+# MaxSimpleSyslog
+Basic the same as my MaxSimpleSyslogNetFramework, but this one run on .NET Core v2 
 
 ### The goal is to provide at small and lightweight framework that support Syslog
 I need a small framework that can work with a syslog server and NLog
