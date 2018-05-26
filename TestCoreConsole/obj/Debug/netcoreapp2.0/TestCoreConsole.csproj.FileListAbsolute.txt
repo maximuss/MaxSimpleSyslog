@@ -1,0 +1,15 @@
+D:\Google Drive\Visual Studio\Project\MaxSimpleSyslog\TestCoreConsole\bin\Debug\netcoreapp2.0\NLog.config
+D:\Google Drive\Visual Studio\Project\MaxSimpleSyslog\TestCoreConsole\bin\Debug\netcoreapp2.0\TestCoreConsole.deps.json
+D:\Google Drive\Visual Studio\Project\MaxSimpleSyslog\TestCoreConsole\bin\Debug\netcoreapp2.0\TestCoreConsole.runtimeconfig.json
+D:\Google Drive\Visual Studio\Project\MaxSimpleSyslog\TestCoreConsole\bin\Debug\netcoreapp2.0\TestCoreConsole.runtimeconfig.dev.json
+D:\Google Drive\Visual Studio\Project\MaxSimpleSyslog\TestCoreConsole\bin\Debug\netcoreapp2.0\TestCoreConsole.dll
+D:\Google Drive\Visual Studio\Project\MaxSimpleSyslog\TestCoreConsole\bin\Debug\netcoreapp2.0\TestCoreConsole.pdb
+D:\Google Drive\Visual Studio\Project\MaxSimpleSyslog\TestCoreConsole\bin\Debug\netcoreapp2.0\MaxSimpleSyslog.dll
+D:\Google Drive\Visual Studio\Project\MaxSimpleSyslog\TestCoreConsole\bin\Debug\netcoreapp2.0\MaxSimpleSyslog.pdb
+D:\Google Drive\Visual Studio\Project\MaxSimpleSyslog\TestCoreConsole\obj\Debug\netcoreapp2.0\TestCoreConsole.csprojAssemblyReference.cache
+D:\Google Drive\Visual Studio\Project\MaxSimpleSyslog\TestCoreConsole\obj\Debug\netcoreapp2.0\TestCoreConsole.csproj.CoreCompileInputs.cache
+D:\Google Drive\Visual Studio\Project\MaxSimpleSyslog\TestCoreConsole\obj\Debug\netcoreapp2.0\TestCoreConsole.AssemblyInfoInputs.cache
+D:\Google Drive\Visual Studio\Project\MaxSimpleSyslog\TestCoreConsole\obj\Debug\netcoreapp2.0\TestCoreConsole.AssemblyInfo.cs
+D:\Google Drive\Visual Studio\Project\MaxSimpleSyslog\TestCoreConsole\obj\Debug\netcoreapp2.0\TestCoreConsole.csproj.CopyComplete
+D:\Google Drive\Visual Studio\Project\MaxSimpleSyslog\TestCoreConsole\obj\Debug\netcoreapp2.0\TestCoreConsole.dll
+D:\Google Drive\Visual Studio\Project\MaxSimpleSyslog\TestCoreConsole\obj\Debug\netcoreapp2.0\TestCoreConsole.pdb

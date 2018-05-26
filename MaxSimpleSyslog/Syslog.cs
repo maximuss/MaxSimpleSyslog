@@ -2,14 +2,15 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Net.Sockets;
-using System.Runtime.CompilerServices;
+using System.Reflection;
 using System.Text;
-using System.Text.RegularExpressions;
 using MaxSimpleSyslog;
+using Newtonsoft.Json;
 
-namespace SimpleSyslog
+namespace MaxSimpleSysLogNetFramework
 {
     public class Syslog
     {
@@ -20,21 +21,114 @@ namespace SimpleSyslog
         private static string _appName;
         private static readonly int VERSION = 1;
 
+        private static IList<SyslogInit> _syslogInits = null;
+
+        /// <summary>
+        /// Initialize for one server
+        /// </summary>
+        /// <param name="hostName">Hostname of the syslog server</param>
+        /// <param name="port">The port the server is listening too</param>
+        /// <param name="appName">Name of the app. If blank then a empty string will be used</param>
+        /// <param name="facility">The default Facility, if blank then will Facility.User be used</param>
         public static void Initialize(string hostName, int port, string appName = "", Facility facility = Facility.User)
         {
             _hostName = hostName;
             _port = port;
             _facility = facility;
-            _facility = facility;
             _appName = appName;
         }
 
+        /// <summary>
+        /// Initialize with one or more servers
+        /// </summary>
+        /// <param name="syslogInits">IList of class SyslogInit</param>
+        public static void Initialize(IList<SyslogInit> syslogInits)
+        {
+            _syslogInits = syslogInits;
+        }
+
+        /// <summary>
+        /// Try to initialize out from sysloginit.json
+        /// </summary>
+        public static void Initialize()
+        {
+            var currentDirectory = Directory.GetCurrentDirectory();
+
+            // deserialize JSON directly from a file
+            using (StreamReader file = File.OpenText($"{currentDirectory}//sysloginit.json"))
+            {
+                JsonSerializer serializer = new JsonSerializer();
+                _syslogInits = (IList<SyslogInit>)serializer.Deserialize(file, typeof(List<SyslogInit>));
+                if (_syslogInits == null)
+                {
+                    throw new FileLoadException("There is no file named sysloginit.json or the file is empty");
+                }
+            }
+        }
+
+        public static void WriteToFile()
+        {
+            if (_syslogInits != null)
+            {
+                var currentDirectory = Directory.GetCurrentDirectory();
+
+                try
+                {
+                    using (StreamWriter file = File.CreateText($"{currentDirectory}//sysloginit.json"))
+                    {
+                        JsonSerializer serializer = new JsonSerializer();
+                        serializer.Serialize(file, _syslogInits);
+                    }
+
+                }
+                catch (Exception e)
+                {
+
+                    throw e;
+                }
+            }
+            else
+            {
+                throw new Exception("There is no entries in SysLogInits. Not possible to write syslog init file.");
+            }
+            
+        }
+
+
         internal void Send(Severity severity, string message, Exception e)
         {
-            if (string.IsNullOrWhiteSpace(_hostName) || _port == 0)
-                return;
-            var constructMessage = ConstructMessage(severity, _facility, message, _appName,e);
-            UdpClient.SendAsync(constructMessage, constructMessage.Length, _hostName, _port);
+            //If _syslogInits is null, first try to initialize it wit a empty constructor. It is possible that there is a init json file created, but the user
+            //have decided not to init it everytime.
+            if(_syslogInits == null)
+                Initialize();
+
+            //If the _syslogInits not is empty use that info
+            if (_syslogInits != null)
+            {
+                foreach (var syslogInit in _syslogInits)
+                {
+                    if(string.IsNullOrWhiteSpace(syslogInit.HostName) || syslogInit.Port == 0)
+                        throw new Exception("Hostname and port can not be empty or null");
+
+                    SendMessage(severity,syslogInit.Facility,message,syslogInit.AppName,e,syslogInit.HostName,syslogInit.Port);
+                }
+            }
+            else
+            {
+                //Otherwise send it with data supplied throught the initialize with "manually" data
+                if (string.IsNullOrWhiteSpace(_hostName) || _port == 0)
+                    throw new Exception("Hostname and port can not be empty or null");
+
+                SendMessage(severity,_facility,message,_appName,e,_hostName,_port);
+            }
+        }
+
+        private void SendMessage(Severity severity, Facility facility, string message, string appName, Exception e, string hostName, int port)
+        {
+            var constructMessage = ConstructMessage(severity, facility, message, appName, e);
+            UdpClient.SendAsync(constructMessage, constructMessage.Length, hostName, port);
+            NLogLogger.Log(severity, message, ClassNameAndMethod(false), e);
+
         }
 
         private byte[] ConstructMessage(Severity level, Facility facility, string message, string tag, Exception e)
@@ -86,6 +180,8 @@ namespace SimpleSyslog
 
         private string ClassNameAndMethod(bool isTag)
         {
+            var assemblyName =Assembly.GetExecutingAssembly().FullName;
+
             StackTrace st = new StackTrace();
             for (int i = 0; i < st.FrameCount; i++)
             {
@@ -96,7 +192,9 @@ namespace SimpleSyslog
                 if(module == null)
                     continue;
 
-                if (module.Contains("MaxSimpleSyslog"))
+                module = module.Replace(".dll", string.Empty);
+
+                if (assemblyName.Contains(module))
                     continue;
 
                 var className = sf.GetMethod().DeclaringType.FullName;

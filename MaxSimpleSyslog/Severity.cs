@@ -1,4 +1,4 @@
-namespace MaxSimpleSyslog
+namespace MaxSimpleSysLogNetFramework
 {
     public enum Severity
     {

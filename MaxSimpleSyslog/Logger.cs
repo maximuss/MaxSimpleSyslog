@@ -1,7 +1,6 @@
 using System;
-using SimpleSyslog;
 
-namespace MaxSimpleSyslog
+namespace MaxSimpleSysLogNetFramework
 {
     public class Logger
     {
@@ -12,7 +11,7 @@ namespace MaxSimpleSyslog
 
         internal static void SendLog(Severity severity, string message, Exception e = null)
         {
-            message = string.Format(message);
+            //message = string.Format(message);
             Syslog syslog = new Syslog();
             syslog.Send(severity,message,e);
         }
